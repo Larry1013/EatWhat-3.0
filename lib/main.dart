@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hello_world/CreateResturantWidget.dart';
 void main() {
   runApp(HelloWorldApp());
 }
@@ -37,11 +38,25 @@ class HelloWorldHome extends StatelessWidget {
     );
   }
   // Function - Create FloatButton
-  FloatingActionButton createFloatingButton() {
+  FloatingActionButton createFloatingButton(BuildContext context) {
     return FloatingActionButton(
       tooltip: 'Add',
       child: Icon(Icons.add),
-      onPressed: null,
+      onPressed: () {
+        showCreateRestaurantWidget(context);
+      }
+    );
+  }
+  void showCreateRestaurantWidget(BuildContext context) {
+//    Navigator.push(context, MaterialPageRoute<void>(
+//      builder: (BuildContext context) {
+//        return RestaurantCreateWidget();
+//      },
+//    ));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => RestaurantCreateWidget(), fullscreenDialog: true),
     );
   }
   @override
@@ -49,7 +64,7 @@ class HelloWorldHome extends StatelessWidget {
     return Scaffold(
       appBar: createAppBar(),
       body: createBody(),
-      floatingActionButton: createFloatingButton(),
+      floatingActionButton: createFloatingButton(context),
     );
   }
 }
