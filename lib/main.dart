@@ -1,55 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hello_world/CreateResturantWidget.dart';
-//import 'package:shared_preferences/shared_preferences.dart';
 import "dart:math";
+import 'package:shared_preferences/shared_preferences.dart';
 void main() {
-  runApp(HelloWorldApp());
+  runApp(EatWhatApp());
 }
-class HelloWorldApp extends StatelessWidget {
+class Restaurant {
+  String name;
+  String content;
+  Restaurant({ this.name, this.content});
+}
+class EatWhatApp extends StatelessWidget {
   @override
+  EatWhatApp({Key key}) : super(key: key);
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Helooooo',
-      home: HelloWorldHome(),
+      home: EatWhatHome(),
       routes: { '/create': (BuildContext context) => RestaurantCreateWidget()
       },
     );
   }
 }
-class MyFirstStatelessWidget extends StatelessWidget {
-  const MyFirstStatelessWidget ({ Key key }) : super(key: key);
-  @override
-  Widget build(BuildContext context) {
-    return Container(color: const Color(0xFF2DBD3A));
-  }
-}
-class HelloWorldHome extends StatelessWidget {
-  final List<String> restaurants = <String>[
-    '城市漢堡',
-    '昆陽牛肉麵',
-    '台南小吃',
-    '越南小吃',
-    '闞記涼麵',
-    '三商巧福',
-    '小水餃',
-    '八分雲集',
-    '燒臘',
-    '頂紅',
-    '北大荒'];
-//  }
-  void showRandomRestaurant(BuildContext context) {
-      showDialog(context: context,
-          builder: (context) {
-            return new SimpleDialog(
-              title: Text("隨機餐廳"),
-              children: <Widget>[
-                Center(
-                  child: Text(restaurants[(new Random()).nextInt(restaurants.length)]),
-                )
-              ],
-            );
-          }
-      );
+class _EatWhatHomeState extends State<EatWhatHome> {
+  List<String> restaurantNames = [];
+  // Function - Data Loading
+  _loadRestaurantNames() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      restaurantNames = (prefs.getStringList('names') ?? []);
+    });
   }
   // Function - Create AppBar
   AppBar createAppBar(BuildContext context) {
@@ -70,91 +50,14 @@ class HelloWorldHome extends StatelessWidget {
       child: Text('目前沒有任何餐廳'),
     );
   }
-  Widget createListView() {
-    return ListView.builder(padding: const EdgeInsets.all(8),
-    itemCount: restaurants.length,
-    itemBuilder: (BuildContext context, int index) {
-        return Container(
-          height: 50,
-          color: Colors.amber[600],
-          child: Center(
-            child: Text(restaurants[index]),
-          ),
-        );
-      },
-    );
-  }
-  Widget createListViewBodyDefault() {
-    return ListView(
-    padding: const EdgeInsets.all(8),
-    children: <Widget>[
-      Container(
-        height: 50,
-        color: Colors.amber[600],
-        child: const Center(
-          child: Text('城市漢堡'),
-        ),
-      ),
-      Container(
-        height: 50,
-        color: Colors.amber[500],
-        child: const Center(
-          child: Text('昆陽牛肉麵'),
-        ),
-      ),
-      Container(
-        height: 50,
-        color: Colors.amber[400],
-        child: const Center(
-          child: Text('台南小吃'),
-        ),
-      ),
-      Container(
-        height: 50,
-        color: Colors.amber[600],
-        child: const Center(
-          child: Text('越南小吃'),
-        ),
-      ),
-      Container(
-        height: 50,
-        color: Colors.amber[600],
-        child: const Center(
-          child: Text('闞記涼麵'),
-        ),
-      ),
-      Container(
-        height: 50,
-        color: Colors.amber[600],
-        child: const Center(
-          child: Text('三商巧福'),
-        ),
-      ),
-      Container(
-        height: 50,
-        color: Colors.amber[600],
-        child: const Center(
-          child: Text('小水餃'),
-        ),
-      ),
-      Container(
-        height: 50,
-        color: Colors.amber[600],
-        child: const Center(
-          child: Text('八方雲集'),
-        ),
-      ),
-    ],
-    );
-  }
   // Function - Create FloatButton
   FloatingActionButton createFloatingButton(BuildContext context) {
     return FloatingActionButton(
-      tooltip: 'Add',
-      child: Icon(Icons.add),
-      onPressed: () {
-        showCreateRestaurantWidget(context);
-      }
+        tooltip: 'Add',
+        child: Icon(Icons.add),
+        onPressed: () {
+          showCreateRestaurantWidget(context);
+        }
     );
   }
   void showCreateRestaurantWidget(BuildContext context) {
@@ -164,6 +67,45 @@ class HelloWorldHome extends StatelessWidget {
           builder: (context) => RestaurantCreateWidget(), fullscreenDialog: true),
     );
   }
+  void showRandomRestaurant(BuildContext context) {
+    showDialog(context: context,
+        builder: (context) {
+          return new SimpleDialog(
+            title: Text("隨機餐廳"),
+            children: <Widget>[
+              Center(
+                child: Text(restaurantNames[(new Random()).nextInt(restaurantNames.length)]),
+              )
+            ],
+          );
+        }
+    );
+  }
+  Widget createListView() {
+    return ListView.builder(padding: const EdgeInsets.all(8),
+      itemCount: restaurantNames.length,
+      itemBuilder: (BuildContext context, int index) {
+        return GestureDetector(
+          onTap: () {
+
+          },
+          child: Container(
+            height: 50,
+            color: Colors.amber[600],
+            child: Center(
+              child: Text(restaurantNames[index]),
+            ),
+          ),
+        );
+      },
+    );
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _loadRestaurantNames();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -172,4 +114,7 @@ class HelloWorldHome extends StatelessWidget {
       floatingActionButton: createFloatingButton(context),
     );
   }
+}
+class EatWhatHome extends StatefulWidget {
+  @override _EatWhatHomeState createState() => _EatWhatHomeState();
 }
