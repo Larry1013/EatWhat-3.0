@@ -23,12 +23,30 @@ class EatWhatApp extends StatelessWidget {
   }
 }
 class _EatWhatHomeState extends State<EatWhatHome> {
+  final List<String> DefaultRestaurants = <String>[
+    '城市漢堡',
+    '昆陽牛肉麵',
+    '台南小吃',
+    '越南小吃',
+    '闞記涼麵',
+    '三商巧福',
+    '小水餃',
+    '八方雲集',
+    '燒臘',
+    '頂紅',
+    '北大荒'];
   List<String> restaurantNames = [];
   // Function - Data Loading
   _loadRestaurantNames() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      restaurantNames = (prefs.getStringList('names') ?? []);
+      List<String> localNames = (prefs.getStringList('names') ?? []);
+      if (localNames.length == 0) {
+        restaurantNames = DefaultRestaurants;
+        prefs.setStringList("names", restaurantNames);
+      } else {
+        restaurantNames = localNames;
+      }
     });
   }
   // Function - Create AppBar
@@ -91,9 +109,12 @@ class _EatWhatHomeState extends State<EatWhatHome> {
           },
           child: Container(
             height: 50,
-            color: Colors.amber[600],
+            color: Colors.redAccent,
             child: Center(
-              child: Text(restaurantNames[index]),
+              child: Text(
+                restaurantNames[index],
+                style: TextStyle(color: Colors.white38.withOpacity(1.0)),
+              )
             ),
           ),
         );
@@ -102,12 +123,12 @@ class _EatWhatHomeState extends State<EatWhatHome> {
   }
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _loadRestaurantNames();
   }
   @override
   Widget build(BuildContext context) {
+    _loadRestaurantNames();
     return Scaffold(
       appBar: createAppBar(context),
       body: createListView(),
